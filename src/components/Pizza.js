@@ -12,7 +12,8 @@ const Pizza = (props) => {
             type="button"
             className="btn btn-primary"
             onClick={() => props.select(props.pizza)}
-          >Edit Pizza</button></td>
+          >Edit Pizza</button>
+      </td>
     </tr>
   )
 }

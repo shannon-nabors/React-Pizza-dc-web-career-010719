@@ -8,43 +8,33 @@ class App extends Component {
     super()
     this.state = {
       pizzas: [],
-      selectedID: null,
-      topping: "",
-      size: "",
-      vegetarian: null
+      pizza: {id: null, topping: "", size: "", vegetarian: null}
     }
   }
 
+  // PIZZA LIST //
+  // Get pizzas on mount
   componentDidMount() {
     fetch("http://localhost:4000/pizzas")
     .then(res => res.json())
     .then(pizzas => this.setState({pizzas}))
   }
 
+  // Callback for "edit pizza" buttons - sets state to selected pizza
   selectPizza = (pizza) => {
     this.setState({
-      topping: pizza.topping,
-      size: pizza.size,
-      vegetarian: pizza.vegetarian,
-      selectedID: pizza.id
+      pizza: {...pizza}
     })
   }
 
-  updatePizzaInDb() {
-    let pizza = this.makePizzaObj()
-    fetch(`http://localhost:4000/pizzas/${pizza.id}`, {
-      method: "PATCH",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify(pizza)
+  // PIZZA FORM //
+  handleFormChange = (e) => {
+    this.setState({
+      pizza:{
+        ...this.state.pizza,
+        [e.target.name]: e.target.value
+      }
     })
-  }
-
-  updatePizzasForList = () => {
-    let newPizzas = [...this.state.pizzas].map(p => {
-      return (p.id === this.state.selectedID ? this.makePizzaObj() : p)
-    })
-
-    this.setState({pizzas: newPizzas})
   }
 
   handleSubmit = (e) => {
@@ -54,39 +44,38 @@ class App extends Component {
     this.resetForm()
   }
 
-  makePizzaObj() {
-    return {
-      id: this.state.selectedID,
-      topping: this.state.topping,
-      size: this.state.size,
-      vegetarian: this.state.vegetarian
-    }
-  }
-
-  handleFormChange = (e) => {
-    this.setState({[e.target.name]: e.target.value})
-  }
-
-  resetForm = () => {
-    this.setState({
-      selectedID: null,
-      topping: "",
-      size: "",
-      vegetarian: null
+  // Helpers for pizza form
+  updatePizzaInDb() {
+    fetch(`http://localhost:4000/pizzas/${this.state.pizza.id}`, {
+      method: "PATCH",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(this.state.pizza)
     })
   }
 
+  updatePizzasForList = () => {
+    let newPizzas = [...this.state.pizzas].map(p => {
+      return (p.id === this.state.pizza.id ? this.state.pizza : p)
+    })
+    this.setState({pizzas: newPizzas})
+  }
+
+  resetForm = () => {
+    this.setState({pizza: {id: null, topping: "", size: "", vegetarian: null}})
+  }
+
+  // RENDER //
   render() {
     return (
       <Fragment>
         <Header/>
         <PizzaForm
-          topping={this.state.topping}
-          size={this.state.size}
-          vegetarian={this.state.vegetarian}
+          pizza={this.state.pizza}
           handleFormChange={this.handleFormChange}
           handleSubmit={this.handleSubmit}/>
-        <PizzaList pizzas={this.state.pizzas} selectPizza={this.selectPizza}/>
+        <PizzaList
+          pizzas={this.state.pizzas}
+          selectPizza={this.selectPizza}/>
       </Fragment>
     );
   }
