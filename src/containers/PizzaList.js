@@ -1,6 +1,18 @@
 import React, { Component } from 'react';
 import Pizza from '../components/Pizza'
+
+
 class PizzaList extends Component {
+  constructor() {
+    super()
+    this.state = {pizzas: []}
+  }
+
+  componentDidMount() {
+    fetch("http://localhost:3000/pizzas")
+    .then(res => res.json())
+    .then(pizzas => this.setState({pizzas}))
+  }
 
   render() {
     return (
@@ -14,9 +26,7 @@ class PizzaList extends Component {
           </tr>
         </thead>
         <tbody>
-          {
-            //render Pizza here
-          }
+          {this.state.pizzas.map(pz => <Pizza key={pz.id} pizza={pz}/>)}
         </tbody>
       </table>
     );
