@@ -3,17 +3,6 @@ import Pizza from '../components/Pizza'
 
 
 class PizzaList extends Component {
-  constructor() {
-    super()
-    this.state = {pizzas: []}
-  }
-
-  componentDidMount() {
-    fetch("http://localhost:3000/pizzas")
-    .then(res => res.json())
-    .then(pizzas => this.setState({pizzas}))
-  }
-
   render() {
     return (
       <table className="table table-striped">
@@ -26,7 +15,7 @@ class PizzaList extends Component {
           </tr>
         </thead>
         <tbody>
-          {this.state.pizzas.map(pz => <Pizza key={pz.id} pizza={pz}/>)}
+          {this.props.pizzas.map(pz => <Pizza key={pz.id} pizza={pz} select={this.props.selectPizza}/>)}
         </tbody>
       </table>
     );
